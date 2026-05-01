@@ -16,28 +16,24 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Bateria -> RegistroTelemetria (1:N)
         modelBuilder.Entity<RegistroTelemetria>()
             .HasOne(r => r.Bateria)
             .WithMany(b => b.Telemetrias)
             .HasForeignKey(r => r.BateriaId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Bateria -> OrdemReciclagem (1:N)
         modelBuilder.Entity<OrdemReciclagem>()
             .HasOne(o => o.Bateria)
             .WithMany(b => b.OrdensReciclagem)
             .HasForeignKey(o => o.BateriaId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // EstacaoCarga -> OrdemReciclagem (1:N)
         modelBuilder.Entity<OrdemReciclagem>()
             .HasOne(o => o.Estacao)
             .WithMany(e => e.OrdensReciclagem)
             .HasForeignKey(o => o.EstacaoId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Precisão decimal para SQLite
         modelBuilder.Entity<OrdemReciclagem>()
             .Property(o => o.CustoProcessamento)
             .HasColumnType("TEXT");

@@ -15,19 +15,13 @@ public class GridIntelligenceController : ControllerBase
         _context = context;
     }
 
-    // GET: api/intelligence/carbon-footprint
-    /// <summary>
-    /// Agregação distribuída: Retorna o custo total de reciclagem agrupado por cidade.
-    /// Simula latência de rede IoT via MQTT/HTTP lento (3 segundos de delay).
-    /// </summary>
+
     [HttpGet("carbon-footprint")]
     public async Task<IActionResult> GetCarbonFootprint()
     {
-        // Simulação de latência de rede IoT (MQTT/HTTP lento)
         Console.WriteLine("[GridIntelligence] Consultando sensores IoT em campo... (simulando latência MQTT)");
         await Task.Delay(3000);
 
-        // Agregação distribuída: agrupar CustoProcessamento por Cidade da Estação
         var resultado = await _context.OrdensReciclagem
             .Include(o => o.Estacao)
             .GroupBy(o => o.Estacao!.Localizacao)
@@ -54,10 +48,7 @@ public class GridIntelligenceController : ControllerBase
         });
     }
 
-    // GET: api/intelligence/dashboard
-    /// <summary>
-    /// Painel de resumo geral do ecossistema GreenDrive.
-    /// </summary>
+
     [HttpGet("dashboard")]
     public async Task<IActionResult> GetDashboard()
     {

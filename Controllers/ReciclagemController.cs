@@ -17,7 +17,6 @@ public class ReciclagemController : ControllerBase
         _context = context;
     }
 
-    // GET: api/reciclagem
     [HttpGet]
     public async Task<ActionResult<IEnumerable<OrdemReciclagem>>> GetOrdens()
     {
@@ -27,7 +26,6 @@ public class ReciclagemController : ControllerBase
             .ToListAsync();
     }
 
-    // GET: api/reciclagem/5
     [HttpGet("{id}")]
     public async Task<ActionResult<OrdemReciclagem>> GetOrdem(int id)
     {
@@ -42,27 +40,18 @@ public class ReciclagemController : ControllerBase
         return ordem;
     }
 
-    // POST: api/reciclagem
-    /// <summary>
-    /// Cria uma ordem de reciclagem.
-    /// REGRA 1: SoH > 60% — bateria apta para Reuso Doméstico (Second Life), não reciclagem.
-    /// REGRA 2: Estação Ultra-Rapida adiciona taxa ambiental de R$ 250,00.
-    /// INTEGRIDADE: BateriaId e EstacaoId devem referenciar registros existentes.
-    /// </summary>
+
     [HttpPost]
     public async Task<ActionResult<OrdemReciclagem>> PostOrdem(OrdemReciclagem ordem)
     {
-        // Integridade: Validar existência da Bateria
         var bateria = await _context.Baterias.FindAsync(ordem.BateriaId);
         if (bateria == null)
             return NotFound(new { mensagem = $"Bateria com ID {ordem.BateriaId} não encontrada. A ordem de reciclagem exige uma bateria válida." });
 
-        // Integridade: Validar existência da Estação
         var estacao = await _context.EstacoesCarga.FindAsync(ordem.EstacaoId);
         if (estacao == null)
             return NotFound(new { mensagem = $"Estação com ID {ordem.EstacaoId} não encontrada. A ordem de reciclagem exige uma estação válida." });
 
-        // Regra de Sustentabilidade: SoH > 60% -> Second Life
         if (bateria.SaudeBateria > 60)
         {
             return BadRequest(new
@@ -73,12 +62,10 @@ public class ReciclagemController : ControllerBase
             });
         }
 
-        // Validar Prioridade
         var prioridadesValidas = new[] { "Baixa", "Alta", "Critica" };
         if (!prioridadesValidas.Contains(ordem.Prioridade))
             return BadRequest(new { mensagem = "Prioridade inválida. Use: Baixa, Alta ou Critica." });
 
-        // Custo de Carbono: taxa extra para estações Ultra-Rapida
         if (estacao.TipoCarga == "Ultra-Rapida")
         {
             ordem.CustoProcessamento += TaxaAmbientalUltraRapida;
@@ -99,7 +86,6 @@ public class ReciclagemController : ControllerBase
         });
     }
 
-    // DELETE: api/reciclagem/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrdem(int id)
     {

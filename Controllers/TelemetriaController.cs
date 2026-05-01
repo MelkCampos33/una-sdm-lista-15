@@ -16,7 +16,6 @@ public class TelemetriaController : ControllerBase
         _context = context;
     }
 
-    // GET: api/telemetria
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RegistroTelemetria>>> GetTelemetrias()
     {
@@ -25,7 +24,6 @@ public class TelemetriaController : ControllerBase
             .ToListAsync();
     }
 
-    // GET: api/telemetria/bateria/5
     [HttpGet("bateria/{bateriaId}")]
     public async Task<ActionResult<IEnumerable<RegistroTelemetria>>> GetTelemetriaPorBateria(int bateriaId)
     {
@@ -40,20 +38,14 @@ public class TelemetriaController : ControllerBase
         return telemetrias;
     }
 
-    // POST: api/telemetria
-    /// <summary>
-    /// Registra uma leitura de telemetria.
-    /// REGRA DE SEGURANÇA: Temperatura > 85°C bloqueia o registro (400 Bad Request).
-    /// </summary>
+   
     [HttpPost]
     public async Task<ActionResult<RegistroTelemetria>> PostTelemetria(RegistroTelemetria telemetria)
     {
-        // Validar existência da bateria
         var bateria = await _context.Baterias.FindAsync(telemetria.BateriaId);
         if (bateria == null)
             return NotFound(new { mensagem = $"Bateria com ID {telemetria.BateriaId} não encontrada. Integridade violada." });
 
-        // Regra de Segurança: temperatura crítica
         if (telemetria.Temperatura > 85)
         {
             Console.WriteLine($" ALERTA DE SEGURANÇA: Risco térmico detectado na bateria {bateria.NumeroSerie}! Registro bloqueado para investigação.");
@@ -74,7 +66,6 @@ public class TelemetriaController : ControllerBase
         return CreatedAtAction(nameof(GetTelemetrias), new { id = telemetria.Id }, telemetria);
     }
 
-    // DELETE: api/telemetria/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTelemetria(int id)
     {
