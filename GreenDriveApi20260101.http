@@ -1,0 +1,6 @@
+@GreenDriveApi20260101_HostAddress = http://localhost:5206
+
+GET {{GreenDriveApi20260101_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
